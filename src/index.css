@@ -111,3 +111,52 @@ code {
   filter: blur(64px);
   will-change: transform, filter;
 }
+
+.section-spacer {
+  height: clamp(4rem, 10vh, 8rem);
+  background: linear-gradient(
+    to bottom,
+    rgb(2 6 23) 0%,
+    rgb(2 6 23 / 0.6) 45%,
+    rgb(2 6 23) 100%
+  );
+}
+
+.section-bg-media {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 16%,
+    black 84%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 16%,
+    black 84%,
+    transparent 100%
+  );
+}
+
+.bg-feather-top {
+  height: clamp(5rem, 16vh, 10rem);
+  background: linear-gradient(
+    to bottom,
+    rgb(2 6 23) 0%,
+    rgb(2 6 23 / 0.92) 35%,
+    rgb(2 6 23 / 0.45) 70%,
+    transparent 100%
+  );
+}
+
+.bg-feather-bottom {
+  height: clamp(5rem, 16vh, 10rem);
+  background: linear-gradient(
+    to top,
+    rgb(2 6 23) 0%,
+    rgb(2 6 23 / 0.92) 35%,
+    rgb(2 6 23 / 0.45) 70%,
+    transparent 100%
+  );
+}

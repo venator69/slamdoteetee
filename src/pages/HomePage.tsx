@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useLocation } from "react-router-dom";
+import { BackgroundFeather } from "../components/BackgroundFeather";
 import { BrandLogo } from "../brand";
+import { media } from "../config/media";
 import { PerformanceSection } from "../performance";
-
-import backgroundGif from "../assets/SLAM_same2-optimize.gif";
-import howDoesItWorkBg from "../assets/How-does-it-works.gif";
-import slamVisualizationVideo from "../assets/orb-slam3-visualization.mp4";
 
 const ttNormsLightUrl = "/fonts/TTNorms-Light.woff2";
 const ttNormsBoldUrl = "/fonts/TTNorms-Bold.woff2";
@@ -182,13 +180,14 @@ export function HomePage() {
 
       <section id="main" className="relative h-screen overflow-hidden scroll-mt-20">
         <div
-          className="absolute inset-0 bg-cover bg-center scale-110 animate-pulse"
+          className="section-bg-media absolute inset-0 bg-cover bg-center scale-110 animate-pulse"
           style={{
-            backgroundImage: `url(${backgroundGif})`,
+            backgroundImage: `url(${media.heroBackground})`,
           }}
         />
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-slate-950" />
+        <BackgroundFeather />
 
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
           <div className="mb-4 min-h-[1.2em] text-6xl md:text-8xl">
@@ -270,17 +269,20 @@ export function HomePage() {
         </div>
       </section>
 
+      <div className="section-spacer" aria-hidden />
+
       <section
         ref={howItWorksRef}
         id="How it works"
-        className="relative scroll-mt-20 overflow-hidden py-20"
+        className="relative min-h-screen scroll-mt-20 overflow-hidden py-32 md:py-40"
       >
         <div
-          className="absolute inset-0 bg-cover bg-center invert"
-          style={{ backgroundImage: `url(${howDoesItWorkBg})` }}
+          className="section-bg-media absolute inset-0 bg-cover bg-center invert"
+          style={{ backgroundImage: `url(${media.howItWorksBackground})` }}
         />
         <div className="absolute inset-0 bg-slate-950/80" />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/70 to-slate-950" />
+        <BackgroundFeather />
 
         <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6 text-center">
           <h2
@@ -306,7 +308,7 @@ export function HomePage() {
             />
           </h2>
           <div
-            className={`mt-10 w-full overflow-hidden rounded-xl shadow-2xl shadow-cyan-500/10 ring-1 ring-white/10 transition-all duration-700 ease-out ${
+            className={`mt-14 w-full overflow-hidden rounded-xl shadow-2xl shadow-cyan-500/10 ring-1 ring-white/10 transition-all duration-700 ease-out md:mt-20 ${
               howItWorksVisible
                 ? "translate-y-0 scale-100 opacity-100"
                 : "translate-y-12 scale-95 opacity-0"
@@ -329,31 +331,36 @@ export function HomePage() {
         </div>
       </section>
 
+      <div className="section-spacer" aria-hidden />
+
       <section
         ref={slamVisualizationRef}
         id="Slam Visualization"
-        className="relative h-screen w-full scroll-mt-20 overflow-hidden"
+        className="relative my-16 h-screen w-full scroll-mt-20 overflow-hidden md:my-24"
       >
-        <video
-          ref={slamVideoBlurRef}
-          aria-hidden
-          tabIndex={-1}
-          className="slam-video-blur-fill absolute inset-0 h-full w-full object-cover"
-          src={slamVisualizationVideo}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-        />
-        <video
-          ref={slamVideoRef}
-          className="absolute inset-0 z-[1] h-full w-full object-contain"
-          src={slamVisualizationVideo}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-        />
+        <div className="section-bg-media absolute inset-0">
+          <video
+            ref={slamVideoBlurRef}
+            aria-hidden
+            tabIndex={-1}
+            className="slam-video-blur-fill absolute inset-0 h-full w-full object-cover"
+            src={media.slamVisualizationVideo}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
+          <video
+            ref={slamVideoRef}
+            className="absolute inset-0 z-[1] h-full w-full object-contain"
+            src={media.slamVisualizationVideo}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
+        </div>
+        <BackgroundFeather />
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-6 pt-12 text-center">
           <h2
@@ -366,6 +373,8 @@ export function HomePage() {
           />
         </div>
       </section>
+
+      <div className="section-spacer" aria-hidden />
 
       <PerformanceSection />
     </div>

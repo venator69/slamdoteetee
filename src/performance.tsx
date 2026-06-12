@@ -10,7 +10,8 @@ import {
   ViewfinderCircleIcon,
 } from "@heroicons/react/24/outline";
 
-import performanceBg from "./assets/performance.gif";
+import { BackgroundFeather } from "./components/BackgroundFeather";
+import { media } from "./config/media";
 
 const ttNormsBoldStyle: CSSProperties = {
   fontFamily: '"TT Norms", system-ui, sans-serif',
@@ -215,14 +216,15 @@ export function PerformanceSection() {
     <section
       ref={sectionRef}
       id="Testbench"
-      className="relative scroll-mt-20 overflow-hidden py-20"
+      className="relative scroll-mt-20 overflow-hidden py-32 md:py-40"
     >
       <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${performanceBg})` }}
+        className="section-bg-media absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${media.performanceBackground})` }}
       />
       <div className="absolute inset-0 bg-slate-950/85" />
       <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/70 to-slate-950" />
+      <BackgroundFeather />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <div className="text-center">
@@ -243,7 +245,7 @@ export function PerformanceSection() {
           </h2>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 md:mt-20 lg:grid-cols-3 xl:grid-cols-4">
           {performanceStats.map((stat, index) => (
             <StatCard
               key={stat.label}
