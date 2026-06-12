@@ -338,29 +338,26 @@ export function HomePage() {
         id="Slam Visualization"
         className="relative my-16 h-screen w-full scroll-mt-20 overflow-hidden md:my-24"
       >
-        <div className="section-bg-media absolute inset-0">
-          <video
-            ref={slamVideoBlurRef}
-            aria-hidden
-            tabIndex={-1}
-            className="slam-video-blur-fill absolute inset-0 h-full w-full object-cover"
-            src={media.slamVisualizationVideo}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-          />
-          <video
-            ref={slamVideoRef}
-            className="absolute inset-0 z-[1] h-full w-full object-contain"
-            src={media.slamVisualizationVideo}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-          />
-        </div>
-        <BackgroundFeather />
+        <video
+          ref={slamVideoBlurRef}
+          aria-hidden
+          tabIndex={-1}
+          className="slam-video-blur-fill absolute inset-0 h-full w-full object-cover"
+          src={media.slamVisualizationVideo}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        />
+        <video
+          ref={slamVideoRef}
+          className="absolute inset-0 z-[1] h-full w-full object-contain"
+          src={media.slamVisualizationVideo}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        />
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-6 pt-12 text-center">
           <h2
