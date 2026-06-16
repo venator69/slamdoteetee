@@ -50,7 +50,6 @@ export function HomePage() {
   const howItWorksRef = useRef<HTMLElement>(null);
   const slamVisualizationRef = useRef<HTMLElement>(null);
   const slamVideoRef = useRef<HTMLVideoElement>(null);
-  const slamVideoBlurRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (!location.hash) {
@@ -91,9 +90,12 @@ export function HomePage() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setSlamVisualizationVisible(entry?.isIntersecting ?? false);
+        if (entry?.isIntersecting) {
+          setSlamVisualizationVisible(true);
+          observer.disconnect();
+        }
       },
-      { threshold: 0.35 },
+      { threshold: 0.25 },
     );
 
     observer.observe(section);
@@ -101,23 +103,12 @@ export function HomePage() {
   }, []);
 
   useEffect(() => {
-    const videos = [slamVideoRef.current, slamVideoBlurRef.current].filter(
-      Boolean,
-    ) as HTMLVideoElement[];
-
-    if (!videos.length) {
+    const video = slamVideoRef.current;
+    if (!video || !slamVisualizationVisible) {
       return;
     }
 
-    if (slamVisualizationVisible) {
-      videos.forEach((video) => {
-        void video.play();
-      });
-    } else {
-      videos.forEach((video) => {
-        video.pause();
-      });
-    }
+    void video.play();
   }, [slamVisualizationVisible]);
 
   useEffect(() => {
@@ -336,38 +327,62 @@ export function HomePage() {
       <section
         ref={slamVisualizationRef}
         id="Slam Visualization"
-        className="relative my-16 h-screen w-full scroll-mt-20 overflow-hidden md:my-24"
+        className="relative min-h-screen scroll-mt-20 overflow-hidden py-32 md:py-40"
       >
-        <video
-          ref={slamVideoBlurRef}
-          aria-hidden
-          tabIndex={-1}
-          className="slam-video-blur-fill absolute inset-0 h-full w-full object-cover"
-          src={media.slamVisualizationVideo}
-          muted
-          loop
-          playsInline
-          preload="metadata"
+        <div
+          className="section-bg-media absolute inset-0 bg-cover bg-center invert"
+          style={{ backgroundImage: `url(${media.howItWorksBackground})` }}
         />
-        <video
-          ref={slamVideoRef}
-          className="absolute inset-0 z-[1] h-full w-full object-contain"
-          src={media.slamVisualizationVideo}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-        />
+        <div className="absolute inset-0 bg-slate-950/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/70 to-slate-950" />
+        <BackgroundFeather />
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-6 pt-12 text-center">
+        <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6 text-center">
           <h2
-            className={`text-4xl tracking-tight text-white drop-shadow-lg transition-all duration-700 ease-out md:text-5xl ${
+            className={`text-4xl tracking-tight text-white transition-all duration-700 ease-out md:text-5xl ${
               slamVisualizationVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-10 opacity-0"
             }`}
-            style={ttNormsBoldStyle}
-          />
+            style={{
+              ...ttNormsBoldStyle,
+              animation: slamVisualizationVisible
+                ? "howItWorksGlow 2.5s ease-in-out 0.6s 1"
+                : undefined,
+            }}
+          >
+            SLAM Visualization
+            <span
+              aria-hidden
+              className={`mx-auto mt-4 block h-1 rounded-full bg-cyan-400 transition-all duration-700 ease-out ${
+                slamVisualizationVisible ? "w-24 opacity-100" : "w-0 opacity-0"
+              }`}
+              style={{ transitionDelay: "250ms" }}
+            />
+          </h2>
+          <div
+            className={`mt-14 w-full overflow-hidden rounded-xl shadow-2xl shadow-cyan-500/10 ring-1 ring-white/10 transition-all duration-700 ease-out md:mt-20 ${
+              slamVisualizationVisible
+                ? "translate-y-0 scale-100 opacity-100"
+                : "translate-y-12 scale-95 opacity-0"
+            }`}
+            style={{ transitionDelay: "350ms" }}
+          >
+            <div className="aspect-video w-full bg-slate-900">
+              {slamVisualizationVisible && (
+                <video
+                  ref={slamVideoRef}
+                  className="h-full w-full object-cover"
+                  src={media.slamVisualizationVideo}
+                  muted
+                  loop
+                  playsInline
+                  controls
+                  preload="metadata"
+                />
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
