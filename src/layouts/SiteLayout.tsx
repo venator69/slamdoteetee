@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import { brand, guestActions, navItems } from "../config/nav";
+import { brand, guestActions, navItems, userActions } from "../config/nav";
 import AppNavbar, { type NavbarAction } from "../navbar";
 
 export function SiteLayout() {
@@ -8,6 +8,7 @@ export function SiteLayout() {
 
   const actions: NavbarAction[] = user
     ? [
+        ...userActions,
         {
           label: "Log out",
           href: "/",

@@ -1,101 +1,132 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
-import { AuthContext } from "./auth-context";
-import { userFromGoogleCredential } from "./google";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
-  getSessionUser,
-  getStoredEmailUsers,
-  hashPassword,
-  saveStoredEmailUsers,
-  setSessionUser,
+  apiGoogleLogin,
+  apiLogin,
+  apiLogout,
+  apiMe,
+  apiRegister,
+} from "./api";
+import { AuthContext } from "./auth-context";
+import {
+  clearAuthSession,
+  getAccessToken,
+  getRefreshToken,
+  saveAuthSession,
 } from "./storage";
 import type { AuthUser } from "./types";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(() => getSessionUser());
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
 
-  const persistUser = useCallback((nextUser: AuthUser | null) => {
-    setUser(nextUser);
-    setSessionUser(nextUser);
+  const persistSession = useCallback(
+    (nextUser: AuthUser, tokens: { access: string; refresh: string }) => {
+      saveAuthSession(nextUser, tokens);
+      setUser(nextUser);
+    },
+    [],
+  );
+
+  const clearSession = useCallback(() => {
+    clearAuthSession();
+    setUser(null);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const restoreSession = async () => {
+      const accessToken = getAccessToken();
+
+      if (!accessToken) {
+        clearAuthSession();
+        if (!cancelled) {
+          setUser(null);
+          setIsInitializing(false);
+        }
+        return;
+      }
+
+      try {
+        const currentUser = await apiMe(accessToken);
+        if (!cancelled) {
+          setUser(currentUser);
+        }
+      } catch {
+        clearAuthSession();
+        if (!cancelled) {
+          setUser(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsInitializing(false);
+        }
+      }
+    };
+
+    void restoreSession();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const loginWithEmail = useCallback(
     async (email: string, password: string) => {
-      const normalizedEmail = email.trim().toLowerCase();
-      const users = getStoredEmailUsers();
-      const account = users.find((entry) => entry.email === normalizedEmail);
-
-      if (!account) {
-        throw new Error("No account found for that email.");
-      }
-
-      const passwordHash = await hashPassword(password);
-      if (account.passwordHash !== passwordHash) {
-        throw new Error("Incorrect password.");
-      }
-
-      persistUser({
-        id: account.id,
-        email: account.email,
-        name: account.name,
-        provider: "email",
-      });
+      const { user: nextUser, tokens } = await apiLogin(email, password);
+      persistSession(nextUser, tokens);
     },
-    [persistUser],
+    [persistSession],
   );
 
   const registerWithEmail = useCallback(
     async (name: string, email: string, password: string) => {
-      const normalizedEmail = email.trim().toLowerCase();
-      const trimmedName = name.trim();
-
-      if (!trimmedName) {
-        throw new Error("Name is required.");
-      }
-
-      const users = getStoredEmailUsers();
-      if (users.some((entry) => entry.email === normalizedEmail)) {
-        throw new Error("An account with this email already exists.");
-      }
-
-      const passwordHash = await hashPassword(password);
-      const account = {
-        id: `email:${crypto.randomUUID()}`,
-        email: normalizedEmail,
-        name: trimmedName,
-        passwordHash,
-      };
-
-      saveStoredEmailUsers([...users, account]);
-      persistUser({
-        id: account.id,
-        email: account.email,
-        name: account.name,
-        provider: "email",
-      });
+      const { user: nextUser, tokens } = await apiRegister(name, email, password);
+      persistSession(nextUser, tokens);
     },
-    [persistUser],
+    [persistSession],
   );
 
   const loginWithGoogle = useCallback(
-    (credential: string) => {
-      persistUser(userFromGoogleCredential(credential));
+    async (credential: string) => {
+      const { user: nextUser, tokens } = await apiGoogleLogin(credential);
+      persistSession(nextUser, tokens);
     },
-    [persistUser],
+    [persistSession],
   );
 
-  const logout = useCallback(() => {
-    persistUser(null);
-  }, [persistUser]);
+  const logout = useCallback(async () => {
+    const accessToken = getAccessToken();
+    const refreshToken = getRefreshToken();
+
+    if (accessToken && refreshToken) {
+      try {
+        await apiLogout(accessToken, refreshToken);
+      } catch {
+        // Clear local session even if server logout fails.
+      }
+    }
+
+    clearSession();
+  }, [clearSession]);
 
   const value = useMemo(
     () => ({
       user,
+      isInitializing,
       loginWithEmail,
       registerWithEmail,
       loginWithGoogle,
       logout,
     }),
-    [user, loginWithEmail, registerWithEmail, loginWithGoogle, logout],
+    [
+      user,
+      isInitializing,
+      loginWithEmail,
+      registerWithEmail,
+      loginWithGoogle,
+      logout,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

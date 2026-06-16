@@ -27,6 +27,10 @@ export const navItems: NavbarItem[] = [
 ];
 
 export const guestActions: NavbarAction[] = [
-  { label: "Get Started", href: "/register", variant: "primary" },
+  { label: "Get Started", href: "/login", variant: "primary" },
   { label: "Log In", href: "/login", variant: "secondary" },
+];
+
+export const userActions: NavbarAction[] = [
+  { label: "Dashboard", href: "/dashboard", variant: "primary" },
 ];

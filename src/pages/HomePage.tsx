@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/useAuth";
 import { BackgroundFeather } from "../components/BackgroundFeather";
 import { BrandLogo } from "../brand";
 import { media } from "../config/media";
@@ -41,6 +42,8 @@ async function typeText(
 
 export function HomePage() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [displayedBrand, setDisplayedBrand] = useState("");
   const [displayedTagline, setDisplayedTagline] = useState("");
   const [isBrandDone, setIsBrandDone] = useState(false);
@@ -224,6 +227,8 @@ export function HomePage() {
             "
           >
             <button
+              type="button"
+              onClick={() => navigate(user ? "/dashboard" : "/login")}
               className="
                 rounded-lg
                 bg-cyan-500
@@ -240,6 +245,12 @@ export function HomePage() {
             </button>
 
             <button
+              type="button"
+              onClick={() => {
+                document
+                  .getElementById("How it works")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
               className="
                 rounded-lg
                 border

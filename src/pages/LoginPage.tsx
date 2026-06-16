@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { AuthCard } from "../components/AuthCard";
 import {
@@ -14,14 +14,22 @@ import { GoogleAuthButton } from "../components/GoogleAuthButton";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { user, loginWithEmail, loginWithGoogle } = useAuth();
+  const location = useLocation();
+  const { user, isInitializing, loginWithEmail, loginWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  if (isInitializing) {
+    return null;
+  }
+
+  const redirectTo =
+    (location.state as { from?: string } | null)?.from ?? "/dashboard";
+
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={redirectTo} replace />;
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -31,7 +39,7 @@ export function LoginPage() {
 
     try {
       await loginWithEmail(email, password);
-      navigate("/", { replace: true });
+      navigate(redirectTo, { replace: true });
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -46,7 +54,7 @@ export function LoginPage() {
   return (
     <AuthCard
       title="Welcome back"
-      subtitle="Log in to your SLAM.et account"
+      subtitle="Log in to your SLAM.et account to run the DEMO"
       footerText="Don't have an account?"
       footerLinkLabel="Register"
       footerLinkTo="/register"
@@ -95,10 +103,10 @@ export function LoginPage() {
       </div>
 
       <GoogleAuthButton
-        onSuccess={(credential) => {
+        onSuccess={async (credential) => {
           try {
-            loginWithGoogle(credential);
-            navigate("/", { replace: true });
+            await loginWithGoogle(credential);
+            navigate(redirectTo, { replace: true });
           } catch (googleError) {
             setError(
               googleError instanceof Error

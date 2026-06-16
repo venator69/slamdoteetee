@@ -41,7 +41,7 @@ export type NavbarItem = NavbarLink & {
 
 export type NavbarAction = NavbarLink & {
   variant?: "primary" | "secondary";
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
 };
 
 export type AppNavbarProps = {
@@ -49,6 +49,7 @@ export type AppNavbarProps = {
   items: NavbarItem[];
   actions?: NavbarAction[];
   className?: string;
+  autoHide?: boolean;
 };
 
 function NavLink({
@@ -245,6 +246,7 @@ export function AppNavbar({
   items,
   actions = [],
   className = "",
+  autoHide = true,
 }: AppNavbarProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -254,6 +256,10 @@ export function AppNavbar({
 
   const resetInactivityTimer = useCallback(() => {
     setNavbarVisible(true);
+
+    if (!autoHide) {
+      return;
+    }
 
     if (inactivityTimerRef.current) {
       clearTimeout(inactivityTimerRef.current);
@@ -266,7 +272,7 @@ export function AppNavbar({
     inactivityTimerRef.current = setTimeout(() => {
       setNavbarVisible(false);
     }, INACTIVITY_MS);
-  }, [mobileOpen]);
+  }, [autoHide, mobileOpen]);
 
   const handleNavigate = useCallback(
     (event: MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -318,6 +324,11 @@ export function AppNavbar({
   }, []);
 
   useEffect(() => {
+    if (!autoHide) {
+      setNavbarVisible(true);
+      return;
+    }
+
     const handleActivity = () => {
       resetInactivityTimer();
     };
@@ -337,7 +348,7 @@ export function AppNavbar({
         clearTimeout(inactivityTimerRef.current);
       }
     };
-  }, [resetInactivityTimer]);
+  }, [autoHide, resetInactivityTimer]);
 
   useEffect(() => {
     if (mobileOpen) {

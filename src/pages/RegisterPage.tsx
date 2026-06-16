@@ -14,7 +14,7 @@ import { GoogleAuthButton } from "../components/GoogleAuthButton";
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const { user, registerWithEmail, loginWithGoogle } = useAuth();
+  const { user, isInitializing, registerWithEmail, loginWithGoogle } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,8 +22,12 @@ export function RegisterPage() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  if (isInitializing) {
+    return null;
+  }
+
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -39,7 +43,7 @@ export function RegisterPage() {
 
     try {
       await registerWithEmail(name, email, password);
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -54,7 +58,7 @@ export function RegisterPage() {
   return (
     <AuthCard
       title="Create your account"
-      subtitle="Join SLAM.et to get started"
+      subtitle="Join SLAM.et to run the DEMO"
       footerText="Already have an account?"
       footerLinkLabel="Log in"
       footerLinkTo="/login"
@@ -128,10 +132,10 @@ export function RegisterPage() {
       </div>
 
       <GoogleAuthButton
-        onSuccess={(credential) => {
+        onSuccess={async (credential) => {
           try {
-            loginWithGoogle(credential);
-            navigate("/", { replace: true });
+            await loginWithGoogle(credential);
+            navigate("/dashboard", { replace: true });
           } catch (googleError) {
             setError(
               googleError instanceof Error
