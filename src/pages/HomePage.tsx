@@ -2,8 +2,11 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { BackgroundFeather } from "../components/BackgroundFeather";
+import { ContactsSection } from "../components/ContactsSection";
+import { GithubSection } from "../components/GithubSection";
 import { BrandLogo } from "../brand";
 import { media } from "../config/media";
+import { siteLinks } from "../config/site";
 import { PerformanceSection } from "../performance";
 
 const ttNormsLightUrl = "/fonts/TTNorms-Light.woff2";
@@ -21,8 +24,7 @@ const ttNormsBoldStyle: CSSProperties = {
 
 const brandText = "SLAM.et";
 const tagline = "Simuntaneous Localization and Mapping with Error Tuning";
-const howItWorksVideoId = "xsKft9Mwxcg";
-const howItWorksVideoSrc = `https://www.youtube.com/embed/${howItWorksVideoId}?autoplay=1&mute=1&rel=0&modestbranding=1`;
+const howItWorksVideoSrc = `https://www.youtube.com/embed/${siteLinks.howItWorksVideoId}?autoplay=1&mute=1&rel=0&modestbranding=1`;
 
 async function typeText(
   text: string,
@@ -212,9 +214,9 @@ export function HomePage() {
               animate-[fadeUp_1s_ease-out_1s_forwards]
             "
           >
-            Real-time ORBSLAM3 based SLAM with AI powered Error Tuning that
-            achieves sub-meter accuracy for 10 meters, Semantic Mapping support,
-            and intelligent, that can achieve sub-100ms latency on Raspberry Pi 5.
+            Real-time ORB-SLAM3 based SLAM with AI-powered error tuning that
+            achieves sub-meter accuracy over 10 meters and sub-100 ms latency
+            on Raspberry Pi 5.
           </p>
 
           <div
@@ -322,7 +324,7 @@ export function HomePage() {
                 <iframe
                   className="h-full w-full"
                   src={howItWorksVideoSrc}
-                  title="How SLAM.et works"
+                  title="How does it work?"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
@@ -400,6 +402,14 @@ export function HomePage() {
       <div className="section-spacer" aria-hidden />
 
       <PerformanceSection />
+
+      <div className="section-spacer" aria-hidden />
+
+      <GithubSection />
+
+      <div className="section-spacer" aria-hidden />
+
+      <ContactsSection />
     </div>
   );
 }

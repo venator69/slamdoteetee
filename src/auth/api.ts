@@ -14,6 +14,8 @@ type ApiUser = {
   name: string;
   role: string;
   date_joined: string;
+  picture?: string;
+  provider?: string;
 };
 
 type AuthResponse = {
@@ -27,7 +29,8 @@ function mapApiUser(user: ApiUser, provider: AuthUser["provider"] = "email"): Au
     email: user.email,
     name: user.name,
     role: user.role,
-    provider,
+    provider: user.provider === "google" ? "google" : provider,
+    picture: user.picture,
   };
 }
 
@@ -117,7 +120,7 @@ export async function apiGoogleLogin(
     body: JSON.stringify({ credential }),
   });
 
-  return { user: mapApiUser(data.user, "google"), tokens: data.tokens };
+  return { user: mapApiUser(data.user), tokens: data.tokens };
 }
 
 export async function apiMe(accessToken: string): Promise<AuthUser> {

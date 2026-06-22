@@ -17,11 +17,10 @@ export const navItems: NavbarItem[] = [
     children: [
       { label: "How it works", href: "#How it works" },
       { label: "SLAM Visualization", href: "#Slam Visualization" },
-      { label: "Specifications", href: "#Testbench" },
-      { label: "Semantic Mapping", href: "#Semantic Mapping" },
+      { label: "Specifications", href: "#Specifications" },
     ],
   },
-  { label: "Testbench", href: "#Testbench" },
+  { label: "Specifications", href: "#Specifications" },
   { label: "Github", href: "#github" },
   { label: "Contacts", href: "#contacts" },
 ];

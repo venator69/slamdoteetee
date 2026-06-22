@@ -11,7 +11,9 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { BackgroundFeather } from "./components/BackgroundFeather";
+import { ScrollYouTubeEmbed } from "./components/ScrollYouTubeEmbed";
 import { media } from "./config/media";
+import { siteLinks } from "./config/site";
 
 const ttNormsBoldStyle: CSSProperties = {
   fontFamily: '"TT Norms", system-ui, sans-serif',
@@ -20,7 +22,8 @@ const ttNormsBoldStyle: CSSProperties = {
 
 type PerformanceStat = {
   label: string;
-  value: number;
+  displayText?: string;
+  value?: number;
   prefix?: string;
   suffix?: string;
   decimals?: number;
@@ -41,18 +44,14 @@ const performanceStats: PerformanceStat[] = [
   },
   {
     label: "Precision",
-    value: 0.04,
-    prefix: "±",
-    suffix: " m",
-    decimals: 2,
+    displayText: "< 80%",
     subtitle: "Repeatable pose error after error tuning",
     icon: "/icons/performance/precision.png",
     FallbackIcon: SparklesIcon,
   },
   {
     label: "Latency",
-    value: 85,
-    suffix: " ms",
+    displayText: "< 100 ms",
     subtitle: "End-to-end frame-to-pose pipeline",
     icon: "/icons/performance/latency.png",
     FallbackIcon: BoltIcon,
@@ -156,11 +155,13 @@ function StatCard({
   delayMs: number;
 }) {
   const animated = useAnimatedNumber(
-    stat.value,
-    active,
+    stat.value ?? 0,
+    active && stat.displayText === undefined,
     1400,
     stat.decimals ?? 0,
   );
+
+  const valueDisplay = stat.displayText ?? `${stat.prefix ?? ""}${animated}${stat.suffix ?? ""}`;
 
   return (
     <div
@@ -177,9 +178,7 @@ function StatCard({
         className="mt-3 text-4xl tracking-tight text-white md:text-5xl"
         style={ttNormsBoldStyle}
       >
-        {stat.prefix}
-        {animated}
-        {stat.suffix}
+        {valueDisplay}
       </p>
       <p className="mt-3 text-xs leading-relaxed text-slate-400 md:text-sm">
         {stat.subtitle}
@@ -215,7 +214,7 @@ export function PerformanceSection() {
   return (
     <section
       ref={sectionRef}
-      id="Testbench"
+      id="Specifications"
       className="relative scroll-mt-20 overflow-hidden py-32 md:py-40"
     >
       <div
@@ -234,7 +233,7 @@ export function PerformanceSection() {
             }`}
             style={ttNormsBoldStyle}
           >
-            How does it perform?
+            Specifications
             <span
               aria-hidden
               className={`mx-auto mt-4 block h-1 rounded-full bg-cyan-400 transition-all duration-700 ease-out ${
@@ -243,6 +242,18 @@ export function PerformanceSection() {
               style={{ transitionDelay: "200ms" }}
             />
           </h2>
+        </div>
+
+        <div
+          className={`mx-auto mt-14 max-w-5xl overflow-hidden rounded-xl shadow-2xl shadow-cyan-500/10 ring-1 ring-white/10 transition-all duration-700 ease-out md:mt-20 ${
+            visible ? "translate-y-0 scale-100 opacity-100" : "translate-y-12 scale-95 opacity-0"
+          }`}
+          style={{ transitionDelay: "300ms" }}
+        >
+          <ScrollYouTubeEmbed
+            videoId={siteLinks.specificationsVideoId}
+            title="Specifications"
+          />
         </div>
 
         <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 md:mt-20 lg:grid-cols-3 xl:grid-cols-4">
